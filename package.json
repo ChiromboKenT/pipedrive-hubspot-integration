@@ -1,0 +1,22 @@
+{
+  "name": "pipedrive-hubspot-integration",
+  "version": "1.0.0",
+  "description": " Task 1: Bi-directional sync between Pipedrive and HubSpot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "inversify": "^6.0.2",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.20",
+    "@types/node": "^20.8.7",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}
