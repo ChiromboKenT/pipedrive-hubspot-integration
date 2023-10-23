@@ -1,8 +1,10 @@
 // types.ts
+
 const TYPES = {
   Logger: Symbol.for("Logger"),
   ExceptionHandler: Symbol.for("ExceptionHandler"),
-  SyncController: Symbol.for("SyncController"),
+  HubSpotController: Symbol.for("HubSpotController"),
+  PipeDriveController: Symbol.for("PipeDriveController"),
   PipedriveService: Symbol.for("PipedriveService"),
   HubSpotService: Symbol.for("HubSpotService"),
 };
