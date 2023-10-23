@@ -1,4 +1,4 @@
-import {HubSpotContact, HubSpotDeal} from "types";
+import {HubSpotContact, HubSpotDeal} from "../types";
 
 class HubSpotEntity {
   deal: any;

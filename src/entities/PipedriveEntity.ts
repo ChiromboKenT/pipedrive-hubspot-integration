@@ -1,4 +1,4 @@
-import {PipeDriveContact, PipeDriveDeal} from "types";
+import {PipeDriveContact, PipeDriveDeal} from "../types";
 
 class PipedriveEntity {
   contact: any;

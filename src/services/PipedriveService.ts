@@ -3,7 +3,7 @@ import "reflect-metadata";
 import {injectable, inject} from "inversify";
 import axios from "axios";
 import TYPES from "types";
-import { Logger } from "middlewares/Logger";
+import {Logger} from "../middlewares/Logger";
 
 @injectable()
 export class PipedriveService {

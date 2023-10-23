@@ -2,10 +2,11 @@ import {CustomError} from "./CustomError";
 import {inject, injectable} from "inversify";
 import {Request, Response, NextFunction} from "express";
 import { Logger } from "./Logger";
+import TYPES from "../types";
 
 @injectable()
 export class ExceptionHandler {
-  constructor(@inject(Logger) private logger: Logger) {}
+  constructor(@inject(TYPES.Logger) private logger: Logger) {}
 
   public handle(
     err: Error,

@@ -1,9 +1,9 @@
 import {inject, injectable} from "inversify";
 import {Logger} from "../middlewares/Logger";
-import {NextFunction} from "express-serve-static-core";
 import {CustomError} from "../middlewares/CustomError";
 import {Send} from "express-serve-static-core";
 import {Request, Response} from "express";
+import TYPES from "../types";
 
 export interface TypedRequestBody<T> extends Request {
   body: T;
@@ -15,7 +15,7 @@ export interface TypedResponse<ResBody> extends Response {
 
 @injectable()
 export class PipeDriveController {
-  constructor(@inject(Logger) private logger: Logger) {}
+  constructor(@inject(TYPES.Logger) private logger: Logger) {}
 
   public handleWebhook(req: TypedRequestBody<any>, res: TypedResponse<any>) {
     const body = req.body;

@@ -1,7 +1,7 @@
 // container.ts
 import "reflect-metadata"; // Import reflect-metadata at the top of your file
 import {Container} from "inversify";
-import TYPES from "types";
+import TYPES from "./types";
 import {Logger} from "./middlewares/Logger";
 import {ExceptionHandler} from "./middlewares/ExceptionHandler";
 import {HubSpotController} from "./controllers/HubSpotController";
