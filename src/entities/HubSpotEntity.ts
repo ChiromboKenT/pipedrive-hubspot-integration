@@ -1,42 +1,48 @@
-import {injectable} from "inversify";
+import {HubSpotContact, HubSpotDeal} from "types";
 
-@injectable()
-export class HubSpotContact {
-  vid: number;
-  createdate: string;
-  state: string;
-  city: string;
-  lastname: string;
-  firstname: string;
-  email: string;
-  company: string;
-  website: string;
-  jobtitle: string;
-  twitterhandle: string;
+class HubSpotEntity {
+  deal: any;
+  contact: any;
 
-  constructor(data: any) {
-    this.vid = data.vid;
-    this.createdate = data.properties.createdate.value;
-    this.state = data.properties.state.value;
-    this.city = data.properties.city.value;
-    this.lastname = data.properties.lastname.value;
-    this.firstname = data.properties.firstname.value;
-    this.email = data.properties.email.value;
-    this.company = data.properties.company.value;
-    this.website = data.properties.website.value;
-    this.jobtitle = data.properties.jobtitle.value;
-    this.twitterhandle = data.properties.twitterhandle.value;
+  constructor(key: "Contact" | "Deal", data: any) {
+    if (key === "Contact") {
+      this.contact = data;
+    } else {
+      this.deal = data;
+    }
   }
 
-  getFullName(): string {
-    return `${this.firstname} ${this.lastname}`;
+  public getContact(): HubSpotContact {
+    const contact = this.contact;
+    if (!contact) return null;
+    return {
+      firstName: contact.firstname?.value,
+      lastName: contact.lastname?.value,
+      city: contact.city?.value,
+      createDate: contact.createdate?.value || `${Date.now()}`,
+      company: contact.company?.value,
+      state: contact.state?.value,
+      email: contact.email?.value,
+      website: contact.website?.value || "",
+      jobTitle: contact.jobtitle?.value,
+      lastUpdated: contact.lastmodifieddate?.value || `${Date.now()}`,
+    };
   }
-
-  getContactInfo(): string {
-    return `Email: ${this.email}`;
-  }
-
-  getLocation(): string {
-    return `${this.city}, ${this.state}`;
+  getDeal(): HubSpotDeal {
+    const deal = this.deal;
+    if (!deal) return null;
+    return {
+      id: deal.id?.value,
+      dealName: deal.dealname?.value,
+      createDate: deal.createdate?.value || `${Date.now()}`,
+      isClosed: deal.hs_is_closed?.value,
+      daysToClose: deal.days_to_close?.value || 30,
+      priority: deal.hs_priority?.value,
+      ownerId: deal.hubspot_owner_id?.value,
+      expectedCloseDate: deal.closedate?.value,
+      dealStage: deal.dealStage?.value,
+      dealType: deal.dealtype?.value,
+      lastUpdated: deal.hs_lastmodifieddate?.value || `${Date.now()}`,
+    };
   }
 }

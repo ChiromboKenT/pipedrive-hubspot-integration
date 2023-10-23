@@ -17,6 +17,18 @@ export interface PipeDriveContact {
   active: boolean;
   numberOfEmails?: string;
 }
+export interface HubSpotContact {
+  firstName: string;
+  lastName: string;
+  city?: string;
+  createDate: string;
+  company: string;
+  state: string;
+  email: string;
+  website?: string;
+  jobTitle: string;
+  lastUpdated: string;
+}
 
 export interface PipeDriveDeal {
   id: number;
@@ -40,5 +52,20 @@ export interface PipeDriveDeal {
   filesCount: number;
   email: string;
 }
+
+export interface HubSpotDeal {
+  id: string;
+  dealName: string;
+  daysToClose: number;
+  ownerId: string;
+  dealType: string;
+  expectedCloseDate: string;
+  dealStage: string;
+  createDate: string;
+  isClosed: boolean;
+  priority: string;
+  lastUpdated: string;
+}
+
 
 export default TYPES;
