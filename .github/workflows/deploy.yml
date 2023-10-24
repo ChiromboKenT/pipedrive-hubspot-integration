@@ -1,0 +1,36 @@
+name: Deploy to Heroku
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'main'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.inputs.branch }}
+
+    - name: Login to Heroku Container Registry
+      run: docker login --username=_ --password=${{ secrets.HEROKU_API_KEY }} registry.heroku.com
+
+    - name: Build and push Docker image
+      run: |
+        docker build -t registry.heroku.com/pipedrive-hubspot-integration/web .
+        docker push registry.heroku.com/pipedrive-hubspot-integration/web
+
+    - name: Release to Heroku
+      run: |
+        heroku container:release web --app pipedrive-hubspot-integration
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
