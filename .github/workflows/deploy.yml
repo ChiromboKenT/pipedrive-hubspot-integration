@@ -38,7 +38,9 @@ jobs:
         docker push registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
 
     - name: Run Heroku Setup Script
-      run: ./set_heroku_env.sh
+      run: |
+        chmod +x ./set_heroku_env.sh
+        ./set_heroku_env.sh
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         HUBSPOT_ACCESS_KEY: ${{ secrets.HUBSPOT_ACCESS_KEY }}
