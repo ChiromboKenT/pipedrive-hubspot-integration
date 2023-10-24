@@ -2,62 +2,124 @@
 import "reflect-metadata";
 import {injectable, inject} from "inversify";
 import axios from "axios";
-import TYPES from "types";
+import TYPES, {PipeDriveContact, PipeDriveDeal} from "../types";
 import {Logger} from "../middlewares/Logger";
+import {CustomError} from "../middlewares/CustomError";
+import {Client as HubSpotClient} from "@hubspot/api-client";
 
 @injectable()
 export class PipedriveService {
   private readonly pipedriveApiUrl = process.env.PIPEDRIVE_URL;
+  private hubspotClient: HubSpotClient;
 
-  constructor(@inject(TYPES.Logger) private logger: Logger) {}
+  constructor(@inject(TYPES.Logger) private logger: Logger) {
+    this.hubspotClient = new HubSpotClient({
+      accessToken: process.env.HUBSPOT_ACCESS_KEY,
+      numberOfApiCallRetries: parseInt(process.env.RETRY_TIMES),
+    });
+  }
 
-  public async syncWithHubSpot(hubSpotData: any): Promise<void> {
+  public async syncWithHubSpot(
+    type: "DEAL" | "CONTACT",
+    pipedriveData: PipeDriveDeal | PipeDriveContact
+  ): Promise<void> {
     try {
-      this.logger.log("Fetching data from Pipedrive");
-
-      const pipedriveData = await this.fetchData();
-
+      this.logger.log("[Pipedrive] Syncing data to Hubspot");
       this.logger.log("Transforming Pipedrive data for HubSpot");
 
-      const transformedData = this.transformDataForHubSpot(
-        pipedriveData,
-        hubSpotData
-      );
-
-      this.logger.log("Sending data to HubSpot");
-
-      await this.updateData(transformedData);
+      if (type === "CONTACT") {
+        const transformedContactData = this.mapContact(
+          pipedriveData as PipeDriveContact
+        );
+        this.logger.log("Sending contact data to HubSpot");
+        await this.createContact(transformedContactData);
+      } else {
+        const transformedDealData = this.mapDeal(
+          pipedriveData as PipeDriveDeal
+        );
+        this.logger.log("Sending deal data to HubSpot");
+        await this.createDeal(transformedDealData);
+      }
 
       this.logger.log("Pipedrive data synced with HubSpot successfully");
     } catch (error) {
       this.logger.error("Error syncing Pipedrive data with HubSpot", error);
-      throw error;
+      throw new CustomError(
+        "[Pipedrive] Failed syncing Pipedrive data with HubSpot",
+        500,
+        error
+      );
     }
   }
 
-  private async fetchData(): Promise<any> {
+  private mapContact(pipedriveData: PipeDriveContact): any {
     try {
-      const response = await axios.get(`${this.pipedriveApiUrl}/deals`);
-      return response.data;
+      return {
+        properties: {
+          company: pipedriveData.organisation,
+          email: pipedriveData.email,
+          firstname: pipedriveData.name,
+          lastname: "",
+          phone: "",
+          createdate: Date.now(),
+          website: "hubspot.com",
+          lifecyclestage: "marketingqualifiedlead",
+        },
+      };
     } catch (error) {
-      this.logger.error("Error fetching data from Pipedrive", error);
-      throw error;
+      throw new CustomError(
+        "[Pipedrive] Failed to transform hubspot data - Contact",
+        500,
+        error
+      );
     }
   }
 
-  private transformDataForHubSpot(pipedriveData: any, hubSpotData: any): any {
-    // Implement logic to transform and merge Pipedrive data with HubSpot data
-    // Here, you can compare, merge, or update data as per the business requirements
-    // Return the transformed data
-  }
-
-  private async updateData(data: any): Promise<void> {
+  private mapDeal(pipedriveData: PipeDriveDeal): any {
     try {
-      // Implement logic to update data in HubSpot
-      // This could involve making API requests to HubSpot to update the data
+      return {
+        properties: {
+          amount: pipedriveData.value,
+          closedate: this.epochToISOString(pipedriveData.expectedCloseDate),
+          dealname: pipedriveData.title,
+          pipeline: "default",
+          dealstage: pipedriveData.status,
+        },
+      };
     } catch (error) {
-      this.logger.error("Error updating data in HubSpot", error);
-      throw error;
+      throw new CustomError(
+        "[Pipedrive] Failed to transform hubspot data - Deal",
+        500,
+        error
+      );
     }
+  }
+
+  private async createContact(data: any): Promise<void> {
+    try {
+      await this.hubspotClient.crm.contacts.basicApi.create(data);
+    } catch (error) {
+      throw new CustomError(
+        "[Pipedrive] Failed to create contact in Hubspot",
+        501,
+        error
+      );
+    }
+  }
+  private async createDeal(data: any): Promise<void> {
+    try {
+      await this.hubspotClient.crm.deals.basicApi.create(data);
+    } catch (error) {
+      throw new CustomError(
+        "[Pipedrive] Failed to create deal in Hubspot",
+        501,
+        error
+      );
+    }
+  }
+
+  private epochToISOString(epochString: Date) {
+    const date = new Date(epochString);
+    return date.toISOString();
   }
 }

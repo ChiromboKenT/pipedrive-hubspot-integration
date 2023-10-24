@@ -1,6 +1,6 @@
 import {HubSpotContact, HubSpotDeal} from "../types";
 
-class HubSpotEntity {
+export default class HubSpotEntity {
   deal: any;
   contact: any;
 

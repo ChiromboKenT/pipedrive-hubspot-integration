@@ -1,6 +1,6 @@
 import {PipeDriveContact, PipeDriveDeal} from "../types";
 
-class PipedriveEntity {
+export default class PipedriveEntity {
   contact: any;
   deal: any;
 
