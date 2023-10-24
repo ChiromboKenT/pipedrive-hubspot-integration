@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: : 'Environment to run'
+        description:  'Environment to run'
         required: true
         default: 'development'
       branch:
