@@ -1,7 +1,6 @@
 import "reflect-metadata";
-import "reflect-metadata";
-import express from "express";
 import {ExceptionHandler} from "./middlewares/ExceptionHandler";
+import express, {Request, Response, NextFunction} from "express";
 import {container} from "./container";
 import dotenv from "dotenv";
 import {registerRoutes} from "./routes";
@@ -19,11 +18,26 @@ const router = registerRoutes(container);
 
 app.use("/api/v1", router);
 
-//use ExceptionHandler Middleware
+// Use ExceptionHandler Middleware
 const exceptionHandler = container.get<ExceptionHandler>(
   TYPES.ExceptionHandler
 );
-app.use(exceptionHandler.handle);
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  exceptionHandler.handle(err, req, res, next);
+});
+
+// Handle unhandled promise rejections
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+});
+
+// Handle uncaught exceptions
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught Exception:", error);
+
+  process.exit(1);
+});
 
 // Start the Express server
 app.listen(port, () => {

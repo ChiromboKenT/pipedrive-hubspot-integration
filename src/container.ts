@@ -6,6 +6,8 @@ import {Logger} from "./middlewares/Logger";
 import {ExceptionHandler} from "./middlewares/ExceptionHandler";
 import {HubSpotController} from "./controllers/HubSpotController";
 import {PipeDriveController} from "./controllers/PipeDriveController";
+import {HubSpotService} from "./services/HubSpotService";
+import {PipedriveService} from "./services/PipedriveService";
 
 const container = new Container();
 
@@ -22,6 +24,10 @@ container
 container
   .bind<PipeDriveController>(TYPES.PipeDriveController)
   .to(PipeDriveController);
+
+//Bind Services
+container.bind<HubSpotService>(TYPES.HubSpotService).to(HubSpotService);
+container.bind<PipedriveService>(TYPES.PipedriveService).to(PipedriveService);
 
 
 

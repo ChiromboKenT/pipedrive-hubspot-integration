@@ -47,11 +47,14 @@ export class PipeDriveController {
           "CONTACT",
           contactData
         );
+        this.logger.debug(`[PipeDrive] Response sync contact : ${result}`);
+
       } else {
         const PipeDriveDeal = new PipedriveEntity("Deal", body.current);
         const dealData = PipeDriveDeal.getDeal();
 
         result = await this.pipeDriveService.syncWithHubSpot("DEAL", dealData);
+        this.logger.debug(`[PipeDrive] Response sync deal : ${result}`);
       }
 
       this.logger.log(`[PipeDrive] data: ${JSON.stringify(body.current)}`);

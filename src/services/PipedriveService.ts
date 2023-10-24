@@ -9,7 +9,6 @@ import {Client as HubSpotClient} from "@hubspot/api-client";
 
 @injectable()
 export class PipedriveService {
-  private readonly pipedriveApiUrl = process.env.PIPEDRIVE_URL;
   private hubspotClient: HubSpotClient;
 
   constructor(@inject(TYPES.Logger) private logger: Logger) {
